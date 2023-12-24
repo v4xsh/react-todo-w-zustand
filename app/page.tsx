@@ -5,18 +5,18 @@ import { useTodoStore } from "@/hooks/store/useTodoStore";
 import { TodoInterface } from "@/types/TodoInterface";
 
 const page: React.FunctionComponent = () => {
+  const todoStore = useTodoStore();
+
+  useEffect(() => {
+    todoStore.getTodos();
+  }, []);
+
   const todos = useTodoStore((state) => state.todos);
   const addTodo = useTodoStore((state) => state.addTodo);
   const toggleTodo = useTodoStore((state) => state.toggleTodo);
   const removeTodo = useTodoStore((state) => state.removeTodo);
   const startEdit = useTodoStore((state) => state.startEdit);
   const finishEdit = useTodoStore((state) => state.finishEdit);
-
-  const todoStore = useTodoStore();
-
-  useEffect(() => {
-    todoStore.getTodos();
-  }, []);
 
   const [todoText, setTodoText] = useState("");
   const [editTodoText, setEditTodoText] = useState("");
