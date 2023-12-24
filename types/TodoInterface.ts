@@ -1,6 +1,6 @@
 export interface TodoInterface {
   id: string;
-  text: string;
+  todo: string;
   completed: boolean;
   editing: boolean;  
 }

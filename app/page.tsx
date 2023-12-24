@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTodoStore } from "@/hooks/store/useTodoStore";
 import { TodoInterface } from "@/types/TodoInterface";
 
@@ -11,6 +11,12 @@ const page: React.FunctionComponent = () => {
   const removeTodo = useTodoStore((state) => state.removeTodo);
   const startEdit = useTodoStore((state) => state.startEdit);
   const finishEdit = useTodoStore((state) => state.finishEdit);
+
+  const todoStore = useTodoStore();
+
+  useEffect(() => {
+    todoStore.getTodos();
+  }, []);
 
   const [todoText, setTodoText] = useState("");
   const [editTodoText, setEditTodoText] = useState("");
@@ -45,7 +51,7 @@ const page: React.FunctionComponent = () => {
           <button
             onClick={() => {
               startEdit(todo.id);
-              setEditTodoText(todo.text);
+              setEditTodoText(todo.todo);
             }}
           >
             Edit
@@ -70,7 +76,7 @@ const page: React.FunctionComponent = () => {
               </button>
             </>
           ) : (
-            <>{todo.text}</>
+            <>{todo.todo}</>
           )}
         </p>
       ))}
