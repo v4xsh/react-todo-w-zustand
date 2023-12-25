@@ -53,13 +53,6 @@ const page: React.FunctionComponent = () => {
             onChange={() => toggleTodo(todo.id)}
           />{" "}
           <button onClick={() => removeTodo(todo.id)}>Remove</button>{" "}
-          <button
-            onClick={() => {
-              startEdit(todo.id);
-            }}
-          >
-            Edit
-          </button>{" "}
           {index + 1}{" "}
           {todo.editing ? (
             <>
@@ -78,7 +71,7 @@ const page: React.FunctionComponent = () => {
                   );
                 }}
                 className="text-black"
-              />
+              />{" "}
               <button
                 onClick={() => {
                   finishEdit(
@@ -92,7 +85,13 @@ const page: React.FunctionComponent = () => {
               </button>
             </>
           ) : (
-            <>{todo.todo}</>
+            <><button
+            onClick={() => {
+              startEdit(todo.id);
+            }}
+          >
+            Edit
+          </button>{" "}{todo.todo}</>
           )}
         </p>
       ))}

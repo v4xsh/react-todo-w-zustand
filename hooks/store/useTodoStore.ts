@@ -122,7 +122,8 @@ export const useTodoStore = create<TodoStore>((set, get) => {
           const updatedTodos = state.todos.map((todo) =>
             todo.id === id ? { ...todo, editing: true } : todo
           );
-          return { todos: updatedTodos };
+          let currEditTodos = updatedTodos.filter((todo) => todo.editing);
+          return { todos: updatedTodos, currEditTodos };
         });
       } catch (e) {
         console.log(`Error updating the database ${e}`);
@@ -147,7 +148,6 @@ export const useTodoStore = create<TodoStore>((set, get) => {
           );
           return { todos: updatedTodos };
         });
-
       } catch (e) {
         console.log(`Failed to update item  ${e}`);
       }
