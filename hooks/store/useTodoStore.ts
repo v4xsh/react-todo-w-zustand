@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { v4 as uuidv4 } from "uuid";
 import { TodoInterface } from "@/types/TodoInterface";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl: string = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey: string = process.env.NEXT_PUBLIC_SUPABASE_KEY!;
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 interface TodoStore {
   getTodos: () => void;
@@ -12,43 +18,64 @@ interface TodoStore {
   finishEdit: (id: string, newText: string) => void;
 }
 
-export const useTodoStore = create<TodoStore>((set) => {
-  const storedTodos =
-    typeof window !== "undefined" ? localStorage.getItem("todos") : null;
-
+export const useTodoStore = create<TodoStore>((set, get) => {
   return {
+    todos: [],
+
     getTodos: async () => {
       try {
-        const res = await fetch("https://dummyjson.com/todos");
-        const data = await res.json();
-        console.log(data, 24)
-        await set((state) => {
-          return { todos: data.todos };
-        });
+        const { data, error } = await supabase.from("Todo").select();
+        if (data) {
+          await set({ todos: data || [] });
+        } else if (error) {
+          console.log(error);
+        }
       } catch (e) {
         console.error(`Error getting data ${e}`);
       }
     },
 
-    todos: storedTodos ? JSON.parse(storedTodos) : [],
-
-    addTodo: (todo) => {
+    addTodo: async (todo) => {
       const newTodo = { id: uuidv4(), todo, completed: false, editing: false };
-      set((state) => {
-        const updatedTodos = [...state.todos, newTodo];
-        localStorage.setItem("todos", JSON.stringify(updatedTodos));
-        return { todos: updatedTodos };
-      });
+      try {
+        const { error } = await supabase.from("Todo").insert(newTodo);
+        if (error) {
+          console.log(error);
+          return;
+        }
+        set((state) => {
+          const updatedTodos = [...state.todos, newTodo];
+          return { todos: updatedTodos };
+        });
+      } catch (e) {
+        console.error(`Error adding to database ${e}`);
+        return;
+      }
     },
 
-    toggleTodo: (id) => {
-      set((state) => {
-        const updatedTodos = state.todos.map((todo) =>
-          todo.id === id ? { ...todo, completed: !todo.completed } : todo
-        );
-        localStorage.setItem("todos", JSON.stringify(updatedTodos));
-        return { todos: updatedTodos };
-      });
+    toggleTodo: async (id) => {
+      const todos = get().todos;
+      try {
+        const todo = todos.find((t) => t.id === id)!;
+        const { error } = await supabase
+          .from("Todo")
+          .update({ completed: !todo.completed })
+          .eq("id", id);
+
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        set((state) => {
+          const updatedTodos = state.todos.map((todo) =>
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo
+          );
+          return { todos: updatedTodos };
+        });
+      } catch (e) {
+        console.error(`Error updating to database ${e}`);
+      }
     },
 
     removeTodo: (id) => {
