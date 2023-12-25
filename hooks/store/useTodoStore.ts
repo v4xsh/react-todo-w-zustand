@@ -14,6 +14,7 @@ interface TodoStore {
   addTodo: (todo: string) => void;
   toggleTodo: (id: string) => void;
   removeTodo: (id: string) => void;
+  currEditTodos: TodoInterface[];
   startEdit: (id: string) => void;
   finishEdit: (id: string, newText: string) => void;
 }
@@ -27,6 +28,9 @@ export const useTodoStore = create<TodoStore>((set, get) => {
         const { data, error } = await supabase.from("Todo").select();
         if (data) {
           await set({ todos: data || [] });
+          await set({
+            currEditTodos: data.filter((todo) => todo.editing) || [],
+          });
         } else if (error) {
           console.log(error);
         }
@@ -100,24 +104,53 @@ export const useTodoStore = create<TodoStore>((set, get) => {
       }
     },
 
-    startEdit: (id) => {
-      set((state) => {
-        const updatedTodos = state.todos.map((todo) =>
-          todo.id === id ? { ...todo, editing: true } : todo
-        );
-        localStorage.setItem("todos", JSON.stringify(updatedTodos));
-        return { todos: updatedTodos };
-      });
+    currEditTodos: [],
+
+    startEdit: async (id) => {
+      try {
+        const { error } = await supabase
+          .from("Todo")
+          .update({ editing: true })
+          .eq("id", id);
+
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        set((state) => {
+          const updatedTodos = state.todos.map((todo) =>
+            todo.id === id ? { ...todo, editing: true } : todo
+          );
+          return { todos: updatedTodos };
+        });
+      } catch (e) {
+        console.log(`Error updating the database ${e}`);
+      }
     },
 
-    finishEdit: (id, newText) => {
-      set((state) => {
-        const updatedTodos = state.todos.map((todo) =>
-          todo.id === id ? { ...todo, todo: newText, editing: false } : todo
-        );
-        localStorage.setItem("todos", JSON.stringify(updatedTodos));
-        return { todos: updatedTodos };
-      });
+    finishEdit: async (id, newText) => {
+      try {
+        const { error } = await supabase
+          .from("Todo")
+          .update({ todo: newText, editing: false })
+          .eq("id", id);
+
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        set((state) => {
+          const updatedTodos = state.todos.map((todo) =>
+            todo.id === id ? { ...todo, todo: newText, editing: false } : todo
+          );
+          return { todos: updatedTodos };
+        });
+
+      } catch (e) {
+        console.log(`Failed to update item  ${e}`);
+      }
     },
   };
 });

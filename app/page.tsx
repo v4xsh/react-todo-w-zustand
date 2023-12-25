@@ -11,15 +11,20 @@ const page: React.FunctionComponent = () => {
     todoStore.getTodos();
   }, []);
 
+  const [todoText, setTodoText] = useState<string>("");
+
   const todos = useTodoStore((state) => state.todos);
   const addTodo = useTodoStore((state) => state.addTodo);
   const toggleTodo = useTodoStore((state) => state.toggleTodo);
   const removeTodo = useTodoStore((state) => state.removeTodo);
+  const currEditTodos = useTodoStore((state) => state.currEditTodos);
   const startEdit = useTodoStore((state) => state.startEdit);
   const finishEdit = useTodoStore((state) => state.finishEdit);
 
-  const [todoText, setTodoText] = useState("");
-  const [editTodoText, setEditTodoText] = useState("");
+  const [editTodosState, setEditTodosState] = useState<TodoInterface[]>([]);
+  useEffect(() => {
+    setEditTodosState(currEditTodos);
+  }, [currEditTodos]);
 
   return (
     <div className="mx-auto">
@@ -51,7 +56,6 @@ const page: React.FunctionComponent = () => {
           <button
             onClick={() => {
               startEdit(todo.id);
-              setEditTodoText(todo.todo);
             }}
           >
             Edit
@@ -60,16 +64,28 @@ const page: React.FunctionComponent = () => {
           {todo.editing ? (
             <>
               <input
-                value={editTodoText}
+                value={
+                  editTodosState.find((editTodo) => editTodo.id === todo.id)
+                    ?.todo || ""
+                }
                 onChange={(e) => {
-                  setEditTodoText(e.target.value);
+                  setEditTodosState((prevTodo) =>
+                    prevTodo.map((editTodo) =>
+                      editTodo.id === todo.id
+                        ? { ...editTodo, todo: e.target.value }
+                        : editTodo
+                    )
+                  );
                 }}
                 className="text-black"
               />
               <button
                 onClick={() => {
-                  finishEdit(todo.id, editTodoText);
-                  setEditTodoText("");
+                  finishEdit(
+                    todo.id,
+                    editTodosState.find((editTodo) => editTodo.id === todo.id)
+                      ?.todo || ""
+                  );
                 }}
               >
                 Save
