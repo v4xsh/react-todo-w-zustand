@@ -29,10 +29,10 @@ const page: React.FunctionComponent = () => {
   }, [currEditTodos]);
 
   return (
-    <div className="m-10">
-      <div className="w-100">
-        <div className="text-3xl text-center mb-8">Todo App</div>
-        <div className="text-center flex items-center justify-center">
+    <div>
+      <div className="text-3xl font-bold px-6 py-4 static bg-prim-purple">Todo App</div>
+      <div className="mt-10">
+        <div className="text-center flex flex-row items-center justify-center">
           <input
             type="text"
             onChange={(e) => {
@@ -40,7 +40,7 @@ const page: React.FunctionComponent = () => {
             }}
             value={todoText}
             placeholder="Add new todo"
-            className="me-2 text-white bg-prim-pink px-3 py-1 rounded-full w-6/12"
+            className="me-2 text-white bg-prim-pink px-4 py-2 rounded-full w-8/12 sm:w-6/12"
           />
           <button
             onClick={() => {
@@ -64,17 +64,17 @@ const page: React.FunctionComponent = () => {
           </button>
         </div>
       </div>
-      <div className="flex flex-wrap mt-3">
+      <div className="flex flex-wrap mt-3 mx-2 sm:mx-10">
         {todos.map((todo: TodoInterface, index: number) => (
           <div
             key={todo.id}
-            className="flex items-center p-3 m-1 bg-stone-50 inline-block text-black"
+            className="flex items-center p-3 m-1 bg-stone-50 inline-block text-black w-full sm:w-auto flex-wrap sm:flex-row justify-center sm:justify-normal"
           >
             <input
               type="checkbox"
               checked={todo.completed}
               onChange={() => toggleTodo(todo.id)}
-              className="me-2 scale-125"
+              className="m-2 scale-125"
               id={todo.id}
             />{" "}
             {todo.editing ? (
@@ -93,8 +93,9 @@ const page: React.FunctionComponent = () => {
                       )
                     );
                   }}
+                  max={30}
                   type="text"
-                  className="text-white bg-prim-pink px-3 py-1"
+                  className="text-white bg-prim-pink px-3 py-1 m-2"
                 />{" "}
                 <button
                   onClick={() => {
@@ -104,7 +105,7 @@ const page: React.FunctionComponent = () => {
                         ?.todo || ""
                     );
                   }}
-                  className="bg-prim-mustard text-white px-3 py-1 ms-2 flex items-center"
+                  className="bg-prim-mustard text-white px-3 py-1 flex items-center"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -124,7 +125,7 @@ const page: React.FunctionComponent = () => {
               </>
             ) : (
               <>
-                <label htmlFor={todo.id}>{todo.todo}</label>
+                <label htmlFor={todo.id} className={`${todo.completed ? "line-through" : ""} cursor-pointer`}>{todo.todo}</label>
                 <button
                   className="bg-prim-purple text-white px-3 py-1 ms-2 flex items-center"
                   onClick={() => {
