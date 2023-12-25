@@ -39,10 +39,12 @@ export const useTodoStore = create<TodoStore>((set, get) => {
       const newTodo = { id: uuidv4(), todo, completed: false, editing: false };
       try {
         const { error } = await supabase.from("Todo").insert(newTodo);
+
         if (error) {
           console.log(error);
           return;
         }
+
         set((state) => {
           const updatedTodos = [...state.todos, newTodo];
           return { todos: updatedTodos };
@@ -54,8 +56,8 @@ export const useTodoStore = create<TodoStore>((set, get) => {
     },
 
     toggleTodo: async (id) => {
-      const todos = get().todos;
       try {
+        const todos = get().todos;
         const todo = todos.find((t) => t.id === id)!;
         const { error } = await supabase
           .from("Todo")
@@ -78,12 +80,24 @@ export const useTodoStore = create<TodoStore>((set, get) => {
       }
     },
 
-    removeTodo: (id) => {
-      set((state) => {
-        const updatedTodos = state.todos.filter((todo) => todo.id !== id);
-        localStorage.setItem("todos", JSON.stringify(updatedTodos));
-        return { todos: updatedTodos };
-      });
+    removeTodo: async (id) => {
+      try {
+        const todos = get().todos;
+        const updatedTodos = todos.filter((todo) => todo.id !== id);
+        const { error } = await supabase
+          .from("Todo")
+          .delete()
+          .match({ id: id });
+
+        if (error) {
+          console.log(error);
+          return;
+        }
+
+        set({ todos: updatedTodos });
+      } catch (e) {
+        console.error(`Error removing from database ${e}`);
+      }
     },
 
     startEdit: (id) => {
