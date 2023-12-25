@@ -1,0 +1,49 @@
+:root {
+  --prim-blue: #355070;
+  --prim-purple: #6d597a;
+  --prim-pink: #b56576;
+  --prim-red: #e56b6f;
+  --prim-mustard: #eaac8b;
+}
+
+.prim-blue {
+  color: var(--prim-blue);
+}
+
+.prim-purple {
+  color: var(--prim-purple);
+}
+
+.prim-pink {
+  color: var(--prim-pink);
+}
+
+.prim-red {
+  color: var(--prim-red);
+}
+
+.prim-mustard {
+  color: var(--prim-mustard);
+}
+
+/* Background color classes */
+
+.bg-prim-blue {
+  background-color: var(--prim-blue);
+}
+
+.bg-prim-purple {
+  background-color: var(--prim-purple);
+}
+
+.bg-prim-pink {
+  background-color: var(--prim-pink);
+}
+
+.bg-prim-red {
+  background-color: var(--prim-red);
+}
+
+.bg-prim-mustard {
+  background-color: var(--prim-mustard);
+}
