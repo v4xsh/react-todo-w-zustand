@@ -11,12 +11,12 @@ import EditTodo from "./components/FinishEditTodo";
 import StartEditTodo from "./components/StartEditTodo";
 import RemoveTodo from "./components/RemoveTodo";
 
-const page: React.FunctionComponent = () => {
+const Page: React.FunctionComponent = () => {
   const todoStore = useTodoStore();
 
   useEffect(() => {
     todoStore.getTodos();
-  }, []);
+  }, [todoStore]);
 
 
   const todos = useTodoStore((state) => state.todos);
@@ -30,7 +30,7 @@ const page: React.FunctionComponent = () => {
         </div>
       </div>
       <div className="flex flex-wrap mt-3 mx-2 sm:mx-10">
-        {todos.map((todo: TodoInterface, index: number) => (
+        {todos.map((todo: TodoInterface) => (
           <div
             key={todo.id}
             className="flex items-center p-3 m-1 bg-stone-50 text-black w-full sm:w-auto flex-wrap sm:flex-row justify-center sm:justify-normal"
@@ -52,4 +52,4 @@ const page: React.FunctionComponent = () => {
   );
 };
 
-export default page;
+export default Page;
